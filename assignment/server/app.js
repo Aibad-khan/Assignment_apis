@@ -6,42 +6,16 @@ require('dotenv').config({path:'./server/.env'});
 const app = express();
 app.use(bodyParser.json());
 
-// MySQL Connection
-    // const db = mysql.createConnection({
-    // host: process.env.HOST,
-    // user: process.env.USER,
-    // password: process.env.PASSWORD,
-    // database: process.env.DATABASE
-    // });
 
-    // db.connect((err) => {
-    // if (err) throw err;
-    // console.log('Connected to MySQL Database.');
-    // });
-    // const dbUrl = process.env.URL;
-
-    // // Create a connection pool using the URL
-    // const db = mysql.createConnection(dbUrl);
-    
-    // // Test the connection
-    // db.getConnection((err, connection) => {
-    //     if (err) {
-    //         console.error('Error connecting to MySQL database:', err);
-    //         throw err;
-    //     }
-    //     console.log('Connected to MySQL Database.');
-    //     // When done with the connection, release it back to the pool
-    //     connection.release();
-    // });
     
     const db = mysql.createPool({
       host: process.env.HOST,
       user: process.env.USER,
       password: process.env.PASSWORD,
       database: process.env.DB,
-      waitForConnections: true,  // Wait for available connections if the pool is full
-      connectionLimit: 5,       // Maximum number of connections in the pool
-      queueLimit: 0              // Unlimited queue length for connection requests
+      waitForConnections: true,  
+      connectionLimit: 5,       
+      queueLimit: 0             
     });
     
     // Get a connection from the pool
@@ -102,7 +76,7 @@ app.get('/listSchools', (req, res) => {
   db.query(query, (err, results) => {
     if (err) throw err;
 
-    // Calculate distance for each school
+    // Calculate distance for each school using havershine formula
     const schoolsWithDistance = results.map(school => {
       const distance = calculateDistance(latitude, longitude, school.latitude, school.longitude);
       return { 
